@@ -6,7 +6,7 @@ try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
     MiddlewareMixin = object
-from log_request_id import local, REQUEST_ID_HEADER_SETTING, LOG_REQUESTS_SETTING, NO_REQUEST_ID, \
+from log_request_id import current_request_var, REQUEST_ID_HEADER_SETTING, LOG_REQUESTS_SETTING, NO_REQUEST_ID, \
     REQUEST_ID_RESPONSE_HEADER_SETTING, GENERATE_REQUEST_ID_IF_NOT_IN_HEADER_SETTING
 
 
@@ -17,7 +17,7 @@ class RequestIDMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         request_id = self._get_request_id(request)
-        local.request_id = request_id
+        current_request_var.set(request_id)
         request.id = request_id
 
     def process_response(self, request, response):
@@ -42,11 +42,6 @@ class RequestIDMiddleware(MiddlewareMixin):
             args += (user_id,)
 
         logger.info(message, *args)
-        
-        try:
-            del local.request_id
-        except AttributeError:
-            pass
 
         return response
 

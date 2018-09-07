@@ -1,10 +1,9 @@
-import threading
-
+import contextvars
 
 __version__ = "1.3.2"
 
 
-local = threading.local()
+current_request_var = contextvars.ContextVar('request')
 
 
 REQUEST_ID_HEADER_SETTING = 'LOG_REQUEST_ID_HEADER'
